@@ -12,41 +12,43 @@
       width: 100%;
       height: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       font-family: 'Segoe UI', system-ui, sans-serif;
       overflow: hidden;
     }
 
     .wrap {
-      display: flex;
+      display: inline-flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
+      padding: 8px;
     }
 
-    /* --- Circle --- */
+    /* ── Circle ── */
     .circle-area {
       position: relative;
-      width: 220px;
-      height: 220px;
+      width: 180px;
+      height: 180px;
+      flex-shrink: 0;
     }
 
     .timer-svg {
-      width: 220px;
-      height: 220px;
+      width: 180px;
+      height: 180px;
       transform: rotate(-90deg);
     }
 
     .ring-bg {
       fill: none;
-      stroke-width: 10;
-      stroke: var(--c-ring, rgba(255,255,255,0.18));
+      stroke-width: 9;
+      stroke: var(--c-ring, rgba(80,80,80,0.5));
     }
 
     .ring-line {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 9;
       stroke: var(--c-line, #00e676);
       stroke-linecap: round;
       transition: stroke-dashoffset 0.6s linear;
@@ -58,12 +60,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.8rem;
+      font-size: 2.4rem;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       font-variant-numeric: tabular-nums;
       color: var(--c-text, #ffffff);
-      text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.6), 0 0 20px rgba(0,0,0,0.4);
       pointer-events: none;
       user-select: none;
     }
@@ -78,164 +80,167 @@
 
     @keyframes pulse {
       from { box-shadow: 0 0 0   0 rgba(255,60,60,0.0); }
-      to   { box-shadow: 0 0 30px 12px rgba(255,60,60,0.5); }
+      to   { box-shadow: 0 0 28px 10px rgba(255,60,60,0.55); }
     }
 
-    /* --- Buttons --- */
-    .btn-row {
+    /* ── Control bar ── */
+    .ctrl-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
+      background: rgba(20,20,20,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 999px;
+      padding: 4px 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
     }
 
     .btn {
-      padding: 7px 20px;
       border: none;
       border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.78rem;
+      font-weight: 700;
       cursor: pointer;
       transition: opacity 0.15s, transform 0.1s;
+      line-height: 1;
+      white-space: nowrap;
     }
 
-    .btn:hover  { opacity: 0.82; }
-    .btn:active { transform: scale(0.96); }
+    .btn:hover  { opacity: 0.8; }
+    .btn:active { transform: scale(0.94); }
 
     #btn-start {
       background: var(--c-line, #00e676);
       color: #111;
-      min-width: 76px;
+      padding: 6px 16px;
+      min-width: 64px;
     }
 
     #btn-reset {
-      background: rgba(255,255,255,0.13);
-      color: var(--c-text, #fff);
-      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 6px 10px;
+      font-size: 0.75rem;
     }
 
     #btn-settings {
       background: none;
       border: none;
-      color: var(--c-text, #fff);
-      font-size: 1.1rem;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
       cursor: pointer;
-      opacity: 0.45;
-      transition: opacity 0.15s;
-      padding: 4px 6px;
+      padding: 4px 5px;
       line-height: 1;
+      transition: color 0.15s;
     }
 
-    #btn-settings:hover { opacity: 1; }
+    #btn-settings:hover { color: #fff; }
 
-    /* --- Settings panel --- */
+    /* ── Settings panel ── */
     .settings {
       display: none;
       flex-direction: column;
-      gap: 8px;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 14px;
-      padding: 14px 16px;
-      width: 230px;
+      gap: 7px;
+      background: rgba(15,15,15,0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 12px 14px;
+      width: 196px;
       border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
 
     .settings.open { display: flex; }
+
+    .s-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 1px;
+    }
 
     .s-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 6px;
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.75);
+      font-size: 0.76rem;
+      color: rgba(255,255,255,0.8);
     }
 
     .s-row input[type="text"] {
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 6px;
       color: #fff;
-      padding: 4px 8px;
-      font-size: 0.8rem;
-      width: 78px;
+      padding: 3px 7px;
+      font-size: 0.78rem;
+      width: 68px;
       font-family: inherit;
     }
 
     .s-row input[type="color"] {
-      width: 38px;
-      height: 26px;
+      width: 34px;
+      height: 22px;
       border: none;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
       padding: 2px;
-      background: none;
+      background: rgba(255,255,255,0.1);
     }
 
-    .s-row.bg-row {
-      flex-wrap: wrap;
-      gap: 4px;
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
     }
 
-    .bg-row .bg-controls {
+    .bg-controls {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .bg-row label {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.6);
+    .bg-controls label {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.55);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 3px;
     }
-
-    .settings-title {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      margin-bottom: 2px;
-    }
-
-    .divider {
-      height: 1px;
-      background: rgba(255,255,255,0.1);
-      margin: 2px 0;
-    }
   </style>
 </head>
 <body>
-
 <div class="wrap">
-  <!-- Circle timer -->
+
+  <!-- Circle -->
   <div class="circle-area">
-    <svg class="timer-svg" viewBox="0 0 220 220">
-      <circle class="ring-bg"   cx="110" cy="110" r="98"/>
-      <circle class="ring-line" cx="110" cy="110" r="98" id="ring"/>
+    <svg class="timer-svg" viewBox="0 0 180 180">
+      <circle class="ring-bg"   cx="90" cy="90" r="80"/>
+      <circle class="ring-line" cx="90" cy="90" r="80" id="ring"/>
     </svg>
     <div class="timer-label" id="display">00:00</div>
-    <div class="done-pulse"  id="done-pulse"></div>
+    <div class="done-pulse" id="done-pulse"></div>
   </div>
 
-  <!-- Buttons -->
-  <div class="btn-row">
-    <button class="btn" id="btn-start">Start</button>
+  <!-- Control bar -->
+  <div class="ctrl-bar">
     <button class="btn" id="btn-reset">Reset</button>
+    <button class="btn" id="btn-start">Start</button>
     <button id="btn-settings" title="Instellingen">⚙</button>
   </div>
 
   <!-- Settings panel -->
   <div class="settings" id="settings">
-    <div class="settings-title">Instellingen</div>
+    <div class="s-title">Instellingen</div>
 
     <div class="s-row">
       <span>Tijd (mm:ss)</span>
-      <input type="text" id="inp-time" value="05:00" placeholder="mm:ss" maxlength="5">
+      <input type="text" id="inp-time" value="05:00" maxlength="5">
     </div>
 
     <div class="divider"></div>
@@ -255,113 +260,92 @@
 
     <div class="divider"></div>
 
-    <div class="s-row bg-row">
+    <div class="s-row">
       <span>Achtergrond</span>
       <div class="bg-controls">
         <input type="color" id="c-bg" value="#1a1a2e">
         <label>
           <input type="checkbox" id="cb-transp" checked>
-          Transparant
+          Transp.
         </label>
       </div>
     </div>
   </div>
+
 </div>
-
 <script>
-  // ── Constanten ────────────────────────────────────────────────
-  const R = 98;
-  const CIRC = 2 * Math.PI * R; // ≈ 615.75
+  const R = 80;
+  const CIRC = 2 * Math.PI * R;
 
-  // ── URL-parameters ────────────────────────────────────────────
-  const P = new URLSearchParams(location.search);
+  const P   = new URLSearchParams(location.search);
   const get = (k, d) => P.has(k) ? decodeURIComponent(P.get(k)) : d;
 
   function parseTimeSecs(v) {
     if (!v) return 300;
-    if (String(v).includes(':')) {
-      const [m, s] = String(v).split(':').map(Number);
-      return (m || 0) * 60 + (s || 0);
+    const s = String(v);
+    if (s.includes(':')) {
+      const [m, sec] = s.split(':').map(Number);
+      return (m || 0) * 60 + (sec || 0);
     }
-    return parseInt(v) || 300;
+    return parseInt(s) || 300;
   }
 
-  let totalSecs  = parseTimeSecs(get('t',    '05:00'));
-  let remaining  = totalSecs;
-  let running    = false;
-  let timer      = null;
+  let totalSecs = parseTimeSecs(get('t', '05:00'));
+  let remaining = totalSecs;
+  let running   = false;
+  let timer     = null;
 
-  // Colors from URL or defaults
   const initText = get('text', '#ffffff');
   const initRing = get('ring', '#555555');
   const initLine = get('line', '#00e676');
   const initBg   = get('bg',   'transparent');
 
-  // ── DOM refs ──────────────────────────────────────────────────
-  const ring       = document.getElementById('ring');
-  const display    = document.getElementById('display');
-  const donePulse  = document.getElementById('done-pulse');
-  const btnStart   = document.getElementById('btn-start');
-  const btnReset   = document.getElementById('btn-reset');
-  const btnSettings= document.getElementById('btn-settings');
-  const settingsEl = document.getElementById('settings');
-  const inpTime    = document.getElementById('inp-time');
-  const cText      = document.getElementById('c-text');
-  const cRing      = document.getElementById('c-ring');
-  const cLine      = document.getElementById('c-line');
-  const cBg        = document.getElementById('c-bg');
-  const cbTransp   = document.getElementById('cb-transp');
+  const ring      = document.getElementById('ring');
+  const display   = document.getElementById('display');
+  const donePulse = document.getElementById('done-pulse');
+  const btnStart  = document.getElementById('btn-start');
+  const btnReset  = document.getElementById('btn-reset');
+  const btnSett   = document.getElementById('btn-settings');
+  const settEl    = document.getElementById('settings');
+  const inpTime   = document.getElementById('inp-time');
+  const cText     = document.getElementById('c-text');
+  const cRing     = document.getElementById('c-ring');
+  const cLine     = document.getElementById('c-line');
+  const cBg       = document.getElementById('c-bg');
+  const cbTransp  = document.getElementById('cb-transp');
 
-  // ── Init SVG dasharray ────────────────────────────────────────
   ring.style.strokeDasharray  = CIRC;
   ring.style.strokeDashoffset = 0;
 
-  // ── Apply colors ──────────────────────────────────────────────
-  function setCSSVar(name, value) {
-    document.documentElement.style.setProperty(name, value);
+  function setVar(name, val) {
+    document.documentElement.style.setProperty(name, val);
   }
 
-  function applyColors(text, r, line, bg) {
-    setCSSVar('--c-text', text);
-    setCSSVar('--c-ring', r);
-    setCSSVar('--c-line', line);
-    document.body.style.background = bg;
-  }
+  // Apply initial colors
+  setVar('--c-text', initText);
+  setVar('--c-ring', initRing);
+  setVar('--c-line', initLine);
+  document.body.style.background = initBg === 'transparent' ? 'transparent' : initBg;
 
-  function hexOrVal(v) {
-    // color pickers need a hex value; if value is 'white'/'black'/etc keep original
-    return (v && v.startsWith('#')) ? v : v;
-  }
-
-  // Set pickers to match initial colors (only set hex values)
   if (initText.startsWith('#')) cText.value = initText;
   if (initRing.startsWith('#')) cRing.value = initRing;
   if (initLine.startsWith('#')) cLine.value = initLine;
-
-  if (initBg === 'transparent') {
-    cbTransp.checked = true;
-  } else {
+  if (initBg !== 'transparent' && initBg.startsWith('#')) {
+    cBg.value = initBg;
     cbTransp.checked = false;
-    if (initBg.startsWith('#')) cBg.value = initBg;
   }
 
   inpTime.value = formatTime(totalSecs);
-  applyColors(initText, initRing, initLine, cbTransp.checked ? 'transparent' : initBg);
 
-  // ── Helpers ───────────────────────────────────────────────────
   function formatTime(s) {
-    const m = Math.floor(s / 60).toString().padStart(2, '0');
-    const sec = (s % 60).toString().padStart(2, '0');
-    return `${m}:${sec}`;
+    return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
   }
 
   function updateUI() {
     display.textContent = formatTime(remaining);
-    const pct = totalSecs > 0 ? remaining / totalSecs : 0;
-    ring.style.strokeDashoffset = CIRC * (1 - pct);
+    ring.style.strokeDashoffset = CIRC * (1 - (totalSecs > 0 ? remaining / totalSecs : 0));
   }
 
-  // ── Web Audio beep ────────────────────────────────────────────
   function playBeep() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -372,18 +356,14 @@
       osc.type = 'sine';
       osc.frequency.setValueAtTime(900, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(450, ctx.currentTime + 0.6);
-      gain.gain.setValueAtTime(0.55, ctx.currentTime);
+      gain.gain.setValueAtTime(0.5, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 1.8);
+      osc.start(); osc.stop(ctx.currentTime + 1.8);
     } catch (_) {}
   }
 
-  // ── Timer logic ───────────────────────────────────────────────
   function finish() {
-    clearInterval(timer);
-    running = false;
-    remaining = 0;
+    clearInterval(timer); running = false; remaining = 0;
     updateUI();
     btnStart.textContent = 'Start';
     donePulse.style.display = 'block';
@@ -396,81 +376,54 @@
     updateUI();
   }
 
-  function startTimer() {
-    if (remaining <= 0) {
-      remaining = totalSecs;
-      donePulse.style.display = 'none';
-      updateUI();
-    }
-    running = true;
-    btnStart.textContent = 'Pauze';
-    donePulse.style.display = 'none';
-    timer = setInterval(tick, 1000);
-  }
-
-  function pauseTimer() {
-    clearInterval(timer);
-    running = false;
-    btnStart.textContent = 'Start';
-  }
-
-  function resetTimer() {
-    clearInterval(timer);
-    running = false;
-    btnStart.textContent = 'Start';
-    donePulse.style.display = 'none';
-
-    const parsed = parseTimeSecs(inpTime.value);
-    if (parsed > 0) {
-      totalSecs = parsed;
-      remaining = totalSecs;
+  btnStart.addEventListener('click', () => {
+    if (running) {
+      clearInterval(timer); running = false;
+      btnStart.textContent = 'Start';
     } else {
-      remaining = totalSecs;
+      if (remaining <= 0) { remaining = totalSecs; donePulse.style.display = 'none'; updateUI(); }
+      donePulse.style.display = 'none';
+      running = true;
+      btnStart.textContent = 'Pauze';
+      timer = setInterval(tick, 1000);
     }
-    updateUI();
-  }
-
-  // ── Event listeners ───────────────────────────────────────────
-  btnStart.addEventListener('click', () => running ? pauseTimer() : startTimer());
-  btnReset.addEventListener('click', resetTimer);
-
-  btnSettings.addEventListener('click', () => {
-    settingsEl.classList.toggle('open');
   });
 
-  // Time input: apply on blur or Enter
-  function applyTimeInput() {
-    const parsed = parseTimeSecs(inpTime.value);
-    if (parsed > 0 && !running) {
-      totalSecs = parsed;
-      remaining = totalSecs;
-      updateUI();
-    }
-  }
-  inpTime.addEventListener('blur', applyTimeInput);
-  inpTime.addEventListener('keydown', e => { if (e.key === 'Enter') applyTimeInput(); });
+  btnReset.addEventListener('click', () => {
+    clearInterval(timer); running = false;
+    btnStart.textContent = 'Start';
+    donePulse.style.display = 'none';
+    totalSecs = parseTimeSecs(inpTime.value) || totalSecs;
+    remaining = totalSecs;
+    updateUI();
+  });
 
-  // Auto-format mm:ss while typing
+  btnSett.addEventListener('click', () => settEl.classList.toggle('open'));
+
+  function applyTime() {
+    const n = parseTimeSecs(inpTime.value);
+    if (n > 0 && !running) { totalSecs = n; remaining = n; updateUI(); }
+  }
+  inpTime.addEventListener('blur', applyTime);
+  inpTime.addEventListener('keydown', e => e.key === 'Enter' && applyTime());
   inpTime.addEventListener('input', () => {
     let v = inpTime.value.replace(/[^0-9:]/g, '');
-    // auto-insert colon after 2 digits if not present
-    if (v.length === 2 && !v.includes(':')) v = v + ':';
+    if (v.length === 2 && !v.includes(':')) v += ':';
     inpTime.value = v;
   });
 
-  cText.addEventListener('input', e => setCSSVar('--c-text', e.target.value));
-  cRing.addEventListener('input', e => setCSSVar('--c-ring', e.target.value));
-  cLine.addEventListener('input', e => setCSSVar('--c-line', e.target.value));
-
+  cText.addEventListener('input', e => setVar('--c-text', e.target.value));
+  cRing.addEventListener('input', e => setVar('--c-ring', e.target.value));
+  cLine.addEventListener('input', e => {
+    setVar('--c-line', e.target.value);
+  });
   cBg.addEventListener('input', e => {
     if (!cbTransp.checked) document.body.style.background = e.target.value;
   });
-
   cbTransp.addEventListener('change', e => {
     document.body.style.background = e.target.checked ? 'transparent' : cBg.value;
   });
 
-  // ── Initial render ────────────────────────────────────────────
   updateUI();
 </script>
 </body>
