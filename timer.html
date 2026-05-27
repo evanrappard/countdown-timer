@@ -87,13 +87,15 @@
     .ctrl-bar {
       display: flex;
       align-items: center;
-      gap: 5px;
-      background: rgba(20,20,20,0.65);
+      justify-content: center;
+      gap: 6px;
+      width: 180px;
+      background: rgba(235,235,235,0.92);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       border-radius: 999px;
-      padding: 4px 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      padding: 5px 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.12);
     }
 
     .btn {
@@ -107,7 +109,7 @@
       white-space: nowrap;
     }
 
-    .btn:hover  { opacity: 0.8; }
+    .btn:hover  { opacity: 0.75; }
     .btn:active { transform: scale(0.94); }
 
     #btn-start {
@@ -118,8 +120,8 @@
     }
 
     #btn-reset {
-      background: rgba(255,255,255,0.15);
-      color: #fff;
+      background: rgba(0,0,0,0.08);
+      color: #333;
       padding: 6px 10px;
       font-size: 0.75rem;
     }
@@ -127,7 +129,7 @@
     #btn-settings {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.7);
+      color: #555;
       font-size: 0.95rem;
       cursor: pointer;
       padding: 4px 5px;
@@ -135,7 +137,7 @@
       transition: color 0.15s;
     }
 
-    #btn-settings:hover { color: #fff; }
+    #btn-settings:hover { color: #111; }
 
     /* ── Settings panel ── */
     .settings {
@@ -147,7 +149,7 @@
       -webkit-backdrop-filter: blur(10px);
       border-radius: 12px;
       padding: 12px 14px;
-      width: 196px;
+      width: 180px;
       border: 1px solid rgba(255,255,255,0.1);
       box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
