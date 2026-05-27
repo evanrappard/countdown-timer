@@ -7,8 +7,14 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body {
-      background: transparent;
+    html {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    body {
+      background: transparent !important;
+      background-color: transparent !important;
       width: 100%;
       height: 100%;
       display: flex;
@@ -327,7 +333,11 @@
   setVar('--c-text', initText);
   setVar('--c-ring', initRing);
   setVar('--c-line', initLine);
-  document.body.style.background = initBg === 'transparent' ? 'transparent' : initBg;
+  const bgValue = initBg === 'transparent' ? 'transparent' : initBg;
+  document.documentElement.style.background = bgValue;
+  document.documentElement.style.backgroundColor = bgValue;
+  document.body.style.background = bgValue;
+  document.body.style.backgroundColor = bgValue;
 
   if (initText.startsWith('#')) cText.value = initText;
   if (initRing.startsWith('#')) cRing.value = initRing;
@@ -423,7 +433,11 @@
     if (!cbTransp.checked) document.body.style.background = e.target.value;
   });
   cbTransp.addEventListener('change', e => {
-    document.body.style.background = e.target.checked ? 'transparent' : cBg.value;
+    const v = e.target.checked ? 'transparent' : cBg.value;
+    document.documentElement.style.background = v;
+    document.documentElement.style.backgroundColor = v;
+    document.body.style.background = v;
+    document.body.style.backgroundColor = v;
   });
 
   updateUI();
