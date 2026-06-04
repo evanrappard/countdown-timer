@@ -8,7 +8,7 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
-      background-color: transparent;
+      background-color: transparent !important;
       width: 100%;
       height: 100%;
       overflow: hidden;
@@ -359,10 +359,14 @@
     document.documentElement.style.setProperty(name, val);
   }
 
-  // CSS sets transparent as default; inline style overrides for color, cleared for transparent
+  // CSS locks transparent via !important; JS overrides with setProperty(..., 'important') for color
   function applyBg(transparent, color) {
     [document.documentElement, document.body].forEach(el => {
-      el.style.backgroundColor = transparent ? '' : color;
+      if (transparent) {
+        el.style.removeProperty('background-color');
+      } else {
+        el.style.setProperty('background-color', color, 'important');
+      }
     });
   }
 
