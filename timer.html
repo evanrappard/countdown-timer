@@ -7,21 +7,17 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html {
-      background: transparent !important;
-      background-color: transparent !important;
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
-      background: transparent !important;
-      background-color: transparent !important;
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: flex-start;
       justify-content: center;
       font-family: 'Segoe UI', system-ui, sans-serif;
-      overflow: hidden;
     }
 
     .wrap {
@@ -30,6 +26,7 @@
       align-items: center;
       gap: 6px;
       padding: 8px;
+      transform-origin: top center;
     }
 
     /* ── Circle ── */
@@ -201,6 +198,12 @@
       background: rgba(255,255,255,0.1);
     }
 
+    .s-row input[type="range"] {
+      width: 78px;
+      accent-color: var(--c-line, #00e676);
+      cursor: pointer;
+    }
+
     .divider {
       height: 1px;
       background: rgba(255,255,255,0.08);
@@ -223,7 +226,7 @@
   </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="wrap">
 
   <!-- Circle -->
   <div class="circle-area">
@@ -248,22 +251,29 @@
 
     <div class="s-row">
       <span>Tijd (mm:ss)</span>
-      <input type="text" id="inp-time" value="05:00" maxlength="5">
+      <input type="text" id="inp-time" maxlength="5">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="s-row">
+      <span>Grootte <span id="scale-pct" style="opacity:0.45;font-size:0.7rem"></span></span>
+      <input type="range" id="inp-scale" min="40" max="100" step="5">
     </div>
 
     <div class="divider"></div>
 
     <div class="s-row">
       <span>Tekstkleur</span>
-      <input type="color" id="c-text" value="#ffffff">
+      <input type="color" id="c-text">
     </div>
     <div class="s-row">
       <span>Cirkelkleur</span>
-      <input type="color" id="c-ring" value="#555555">
+      <input type="color" id="c-ring">
     </div>
     <div class="s-row">
       <span>Lijnkleur</span>
-      <input type="color" id="c-line" value="#00e676">
+      <input type="color" id="c-line">
     </div>
 
     <div class="divider"></div>
@@ -271,9 +281,9 @@
     <div class="s-row">
       <span>Achtergrond</span>
       <div class="bg-controls">
-        <input type="color" id="c-bg" value="#1a1a2e">
+        <input type="color" id="c-bg">
         <label>
-          <input type="checkbox" id="cb-transp" checked>
+          <input type="checkbox" id="cb-transp">
           Transp.
         </label>
       </div>
@@ -282,32 +292,48 @@
 
 </div>
 <script>
-  const R = 80;
+  const R    = 80;
   const CIRC = 2 * Math.PI * R;
+  const STORE_KEY = 'cdt_v1';
 
-  const P   = new URLSearchParams(location.search);
-  const get = (k, d) => P.has(k) ? decodeURIComponent(P.get(k)) : d;
+  // ── Persistence ──
+  function loadStored() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+  }
+  function saveStored(patch) {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ ...loadStored(), ...patch }));
+    } catch {}
+  }
+
+  const stored = loadStored();
+  const P      = new URLSearchParams(location.search);
+  // Priority: URL param > localStorage > hardcoded default
+  const get = (k, d) => P.has(k) ? decodeURIComponent(P.get(k)) : (stored[k] !== undefined ? stored[k] : d);
 
   function parseTimeSecs(v) {
-    if (!v) return 300;
+    if (!v) return 600;
     const s = String(v);
     if (s.includes(':')) {
       const [m, sec] = s.split(':').map(Number);
       return (m || 0) * 60 + (sec || 0);
     }
-    return parseInt(s) || 300;
+    return parseInt(s) || 600;
   }
 
-  let totalSecs = parseTimeSecs(get('t', '05:00'));
+  let totalSecs = parseTimeSecs(get('t', '10:00'));
   let remaining = totalSecs;
   let running   = false;
   let timer     = null;
 
-  const initText = get('text', '#ffffff');
-  const initRing = get('ring', '#555555');
-  const initLine = get('line', '#00e676');
-  const initBg   = get('bg',   'transparent');
+  const initText   = get('text',   '#ffffff');
+  const initRing   = get('ring',   '#555555');
+  const initLine   = get('line',   '#00e676');
+  const initBg     = get('bg',     '#1a1a2e');
+  const initTransp = get('transp', 'true') === 'true';
+  const initScale  = Math.min(100, Math.max(40, parseInt(get('scale', '100'))));
 
+  // ── DOM ──
   const ring      = document.getElementById('ring');
   const display   = document.getElementById('display');
   const donePulse = document.getElementById('done-pulse');
@@ -321,6 +347,9 @@
   const cLine     = document.getElementById('c-line');
   const cBg       = document.getElementById('c-bg');
   const cbTransp  = document.getElementById('cb-transp');
+  const inpScale  = document.getElementById('inp-scale');
+  const scalePct  = document.getElementById('scale-pct');
+  const wrap      = document.getElementById('wrap');
 
   ring.style.strokeDasharray  = CIRC;
   ring.style.strokeDashoffset = 0;
@@ -329,26 +358,38 @@
     document.documentElement.style.setProperty(name, val);
   }
 
-  // Apply initial colors
+  // No !important in CSS — inline styles set here always win
+  function applyBg(transparent, color) {
+    const val = transparent ? 'transparent' : color;
+    document.documentElement.style.background = val;
+    document.body.style.background = val;
+  }
+
+  function applyScale(pct) {
+    const s = pct / 100;
+    wrap.style.transform = s < 1 ? `scale(${s})` : '';
+    scalePct.textContent = pct + '%';
+  }
+
+  // ── Apply initial values ──
   setVar('--c-text', initText);
   setVar('--c-ring', initRing);
   setVar('--c-line', initLine);
-  const bgValue = initBg === 'transparent' ? 'transparent' : initBg;
-  document.documentElement.style.background = bgValue;
-  document.documentElement.style.backgroundColor = bgValue;
-  document.body.style.background = bgValue;
-  document.body.style.backgroundColor = bgValue;
 
-  if (initText.startsWith('#')) cText.value = initText;
-  if (initRing.startsWith('#')) cRing.value = initRing;
-  if (initLine.startsWith('#')) cLine.value = initLine;
-  if (initBg !== 'transparent' && initBg.startsWith('#')) {
-    cBg.value = initBg;
-    cbTransp.checked = false;
-  }
+  cText.value = initText.startsWith('#') ? initText : '#ffffff';
+  cRing.value = initRing.startsWith('#') ? initRing : '#555555';
+  cLine.value = initLine.startsWith('#') ? initLine : '#00e676';
+  cBg.value   = initBg.startsWith('#')   ? initBg   : '#1a1a2e';
+
+  cbTransp.checked = initTransp;
+  applyBg(initTransp, initBg);
+
+  inpScale.value = initScale;
+  applyScale(initScale);
 
   inpTime.value = formatTime(totalSecs);
 
+  // ── Timer ──
   function formatTime(s) {
     return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
   }
@@ -360,11 +401,10 @@
 
   function playBeep() {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
+      const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+      const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(ctx.destination);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(900, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(450, ctx.currentTime + 0.6);
@@ -388,6 +428,7 @@
     updateUI();
   }
 
+  // ── Controls ──
   btnStart.addEventListener('click', () => {
     if (running) {
       clearInterval(timer); running = false;
@@ -414,7 +455,10 @@
 
   function applyTime() {
     const n = parseTimeSecs(inpTime.value);
-    if (n > 0 && !running) { totalSecs = n; remaining = n; updateUI(); }
+    if (n > 0 && !running) {
+      totalSecs = n; remaining = n; updateUI();
+      saveStored({ t: inpTime.value });
+    }
   }
   inpTime.addEventListener('blur', applyTime);
   inpTime.addEventListener('keydown', e => e.key === 'Enter' && applyTime());
@@ -424,20 +468,23 @@
     inpTime.value = v;
   });
 
-  cText.addEventListener('input', e => setVar('--c-text', e.target.value));
-  cRing.addEventListener('input', e => setVar('--c-ring', e.target.value));
-  cLine.addEventListener('input', e => {
-    setVar('--c-line', e.target.value);
-  });
+  cText.addEventListener('input', e => { setVar('--c-text', e.target.value); saveStored({ text: e.target.value }); });
+  cRing.addEventListener('input', e => { setVar('--c-ring', e.target.value); saveStored({ ring: e.target.value }); });
+  cLine.addEventListener('input', e => { setVar('--c-line', e.target.value); saveStored({ line: e.target.value }); });
+
   cBg.addEventListener('input', e => {
-    if (!cbTransp.checked) document.body.style.background = e.target.value;
+    if (!cbTransp.checked) { applyBg(false, e.target.value); saveStored({ bg: e.target.value }); }
   });
+
   cbTransp.addEventListener('change', e => {
-    const v = e.target.checked ? 'transparent' : cBg.value;
-    document.documentElement.style.background = v;
-    document.documentElement.style.backgroundColor = v;
-    document.body.style.background = v;
-    document.body.style.backgroundColor = v;
+    applyBg(e.target.checked, cBg.value);
+    saveStored({ transp: String(e.target.checked) });
+  });
+
+  inpScale.addEventListener('input', e => {
+    const pct = parseInt(e.target.value);
+    applyScale(pct);
+    saveStored({ scale: String(pct) });
   });
 
   updateUI();
